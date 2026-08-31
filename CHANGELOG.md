@@ -54,6 +54,16 @@ represent previously published GitHub Releases.
 
 ### Changed
 
+- Multi-layer data-toggle bursts no longer crash the renderer. A new
+  `src/perfInit.js` is loaded before `src/main.js` and installs two
+  cooperating sinks: a render-request coalescer that wraps
+  `viewer.scene.requestRender` so any number of in-flight requests
+  collapse to one per animation frame, and a layer-enable serializer
+  that wraps `dataManager.setEnabled` through a FIFO with
+  duplicate-layer collapsing, `max-concurrent = 2`, and an `80 ms`
+  start gap between job dispatches. Rapid "turn everything on"
+  interactions now settle cleanly instead of unhandled-rejecting and
+  stalling the scene.
 - First-run presentation now opens with Detection `DENSE` at 75%, `ELASTIC`
   allocation, Fade 7%, Outside 1%, scope feather 11%, and aircraft 3D models in
   `PROXIMITY`. Stored state and share links still override these baselines.
